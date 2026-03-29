@@ -1,0 +1,68 @@
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "cwagent"
+  },
+  "metrics": {
+    "namespace": "NineChronicles/Bridge",
+    "metrics_collected": {
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": 60
+      },
+      "disk": {
+        "measurement": [
+          "disk_used_percent"
+        ],
+        "metrics_collection_interval": 300,
+        "resources": [
+          "/"
+        ]
+      },
+      "cpu": {
+        "measurement": [
+          "cpu_usage_idle"
+        ],
+        "metrics_collection_interval": 60,
+        "totalcpu": true
+      }
+    },
+    "append_dimensions": {
+      "InstanceId": "${aws:InstanceId}",
+      "InstanceType": "${aws:InstanceType}"
+    },
+    "aggregation_dimensions": [
+      ["InstanceId"]
+    ]
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/bridge-backup.log",
+            "log_group_name": "/aws/ec2/ncg-eth-bridge",
+            "log_stream_name": "{instance_id}/bridge-backup",
+            "timezone": "UTC",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%SZ"
+          }
+        ]
+      },
+      "journald": {
+        "collect_list": [
+          {
+            "log_group_name": "/aws/ec2/ncg-eth-bridge",
+            "log_stream_name": "{instance_id}/docker-ncg-eth-bridge",
+            "units": [
+              "ncg-eth-bridge.service"
+            ]
+          }
+        ]
+      }
+    },
+    "log_stream_name": "{instance_id}/default",
+    "force_flush_interval": 15
+  }
+}

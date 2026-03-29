@@ -1,0 +1,36 @@
+[Unit]
+Description=NineChronicles Ethereum Bridge
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=30
+StartLimitBurst=3
+StartLimitIntervalSec=300
+TimeoutStopSec=30
+
+# Load the ECR image URL and other runtime variables from the env file.
+# Override ECR_IMAGE in /etc/bridge/bridge.env before starting the service.
+EnvironmentFile=/etc/bridge/bridge.env
+
+ExecStartPre=-/usr/bin/docker stop ncg-eth-bridge
+ExecStartPre=-/usr/bin/docker rm ncg-eth-bridge
+
+ExecStart=/usr/bin/docker run \
+    --name ncg-eth-bridge \
+    --rm \
+    --env-file /etc/bridge/bridge.env \
+    --volume /data/sqlite:/data \
+    --volume /data/.env:/data/.env:ro \
+    --log-driver=journald \
+    --log-opt tag=ncg-eth-bridge \
+    --restart=no \
+    ${ECR_IMAGE}
+
+ExecStop=/usr/bin/docker stop ncg-eth-bridge
+
+[Install]
+WantedBy=multi-user.target
