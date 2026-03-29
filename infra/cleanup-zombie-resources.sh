@@ -46,7 +46,7 @@ fi
 # PHASE A: ap-northeast-2 (서울) — 좀비 EBS 19개 (930GB gp2, $106.02/월)
 # ---------------------------------------------------------------------------
 log "=== PHASE A: 서울 좀비 EBS 볼륨 삭제 (ap-northeast-2) ==="
-info "총 19개, 930GB gp2, $106.02/월 낭비 중"
+info "총 19개, 930GB gp2, 106.02달러/월 낭비 중"
 
 ZOMBIE_VOLS_APN2=(
   vol-0b2edd170b0bb66f9   # 20GB  kubernetes-dynamic-pvc-d838134e
@@ -107,7 +107,7 @@ echo ""
 # PHASE B: ap-northeast-2 (서울) — 좀비 CLB 4개 ($74.40/월)
 # ---------------------------------------------------------------------------
 log "=== PHASE B: 서울 좀비 CLB 삭제 (ap-northeast-2) ==="
-info "4개 CLB, 인스턴스 0개, $74.40/월 낭비 중"
+info "4개 CLB, 인스턴스 0개, 74.40달러/월 낭비 중"
 info "모두 eksctl-bridge-internal-cluster 소속 (EKS 클러스터 이미 삭제됨)"
 
 ZOMBIE_CLBS_APN2=(
@@ -144,7 +144,7 @@ echo ""
 # PHASE C: ap-southeast-1 (싱가포르) — NAT Gateway + EIP ($47.62/월)
 # ---------------------------------------------------------------------------
 log "=== PHASE C: 싱가포르 NAT Gateway 삭제 (ap-southeast-1) ==="
-info "nat-0ba9f68640524b1e6, 데이터 처리량 0GB, $43.90/월 낭비 중"
+info "nat-0ba9f68640524b1e6, 데이터 처리량 0GB, 43.90달러/월 낭비 중"
 info "9c-bridge-mainnet-cluster EKS 삭제 후 잔존 리소스"
 
 NAT_GW_APS1="nat-0ba9f68640524b1e6"
@@ -172,7 +172,7 @@ echo ""
 # PHASE D: ap-northeast-1 (도쿄) — 좀비 EBS 2개 ($28.50/월)
 # ---------------------------------------------------------------------------
 log "=== PHASE D: 도쿄 좀비 EBS 볼륨 삭제 (ap-northeast-1) ==="
-info "250GB gp2, $28.50/월 낭비 중"
+info "250GB gp2, 28.50달러/월 낭비 중"
 
 ZOMBIE_VOLS_APN1=(
   vol-0bf62206aef352e17   # 50GB
@@ -206,7 +206,7 @@ echo ""
 # PHASE E: ap-southeast-1 (싱가포르) — 좀비 EBS 2개 ($28.50/월)
 # ---------------------------------------------------------------------------
 log "=== PHASE E: 싱가포르 좀비 EBS 볼륨 삭제 (ap-southeast-1) ==="
-info "250GB gp2, $28.50/월 낭비 중"
+info "250GB gp2, 28.50달러/월 낭비 중"
 
 ZOMBIE_VOLS_APS1=(
   vol-0910fbb8a003540a5   # 200GB
