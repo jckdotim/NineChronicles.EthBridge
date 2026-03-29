@@ -3,7 +3,7 @@
 > 작성일: 2026-03-29
 > AWS Account: 504460216450
 > 데이터 출처: AWS Cost Explorer + CLI 직접 조회
-> 현재 비용: **$611.80/월** → 목표: **~$89/월** (85% 절감)
+> Jan 2026 실측: **$611.80/월** → Phase 1 완료 후: **~$278/월** → 최종 목표: **~$69/월** (89% 절감)
 
 ---
 
@@ -68,14 +68,14 @@ aws ec2 describe-nat-gateways --region ap-southeast-1 \
   --query 'NatGateways[].[NatGatewayId,State]' --output table
 ```
 
-**✅ Phase 1 체크리스트**
-- [ ] DRY_RUN 출력 검토 완료
-- [ ] 서울 EBS 19개 삭제 완료
-- [ ] 서울 CLB 4개 삭제 완료
-- [ ] 싱가포르 NAT Gateway 삭제 완료
-- [ ] 싱가포르 EIP 해제 완료
-- [ ] 도쿄 EBS 2개 삭제 완료
-- [ ] 싱가포르 EBS 2개 삭제 완료
+**✅ Phase 1 체크리스트 — 2026-03-29 완료**
+- [x] DRY_RUN 출력 검토 완료
+- [x] 서울 EBS 19개 삭제 완료
+- [x] 서울 CLB 4개 삭제 완료
+- [x] 싱가포르 NAT Gateway 삭제 완료
+- [x] 싱가포르 EIP 해제 완료
+- [x] 도쿄 EBS 2개 삭제 완료
+- [x] 싱가포르 EBS 2개 삭제 완료
 
 ---
 
@@ -148,21 +148,49 @@ aws ec2 describe-instances --region us-east-2 \
 
 ---
 
-### Phase 3: EBS gp2 → gp3 전환 (선택)
+### Phase 3: t4g.nano 이전 (팀 검토 후 진행)
 
-**절감 효과**: ~$2.28/월 (미미)
-**다운타임**: 없음 (온라인 전환, 수십 분 소요)
-**위험도**: ★☆☆
+**절감 효과**: ~$68/월 추가 절감 (Phase 2 대비)
+**다운타임**: 인스턴스당 약 10분 (순차 진행)
+**위험도**: ★★☆ (ARM64 이미지 빌드 필요)
 
-eth-bridge 100GB gp2 → gp3: $11.40 → $9.12/월
+eth-bridge, bsc-bridge를 ARM64 Graviton2 t4g.nano 신규 인스턴스로 이전.
+
+#### 전제 조건
+
+- Phase 2 완료 (t3.small 다운사이징 후 안정 운영 확인)
+- ARM64 Docker 이미지 빌드: `bridge/Dockerfile.arm64` (준비 완료)
+- ARM64 SQLite 바이너리 대응: Dockerfile 내 musl arm64 빌드 포함 (준비 완료)
+
+#### 실행 절차
+
 ```bash
-aws ec2 modify-volume --region us-east-2 \
-  --volume-id vol-032d28a1c199a314e --volume-type gp3
+# 신규 t4g.nano 인스턴스 프로비저닝
+bash infra/launch-t4g-nano.sh
+
+# 인스턴스 초기 설정 (ARM64 AL2023)
+bash infra/setup-instance.sh <NEW_INSTANCE_ID>
+
+# SQLite 상태 마이그레이션 (S3 경유)
+bash infra/migrate-sqlite.sh <OLD_INSTANCE_IP> <S3_BUCKET> <NEW_INSTANCE_ID>
 ```
+
+#### 주의사항
+
+- eth-bridge와 bsc-bridge는 **절대 동시에 중단하지 않음** (순차 진행)
+- 신규 인스턴스 기동 후 최소 **10분 관찰** (Slack 알림 정상 수신 확인)
+- `PendingTransactionHandler`가 시작 시 in-flight 트랜잭션을 FAILED 처리 → Slack 알림으로 확인 가능
+- 구 인스턴스는 중지 후 1주일 모니터링 후 종료
+
+**✅ Phase 3 체크리스트**
+- [ ] ARM64 Docker 이미지 빌드 및 ECR 푸시
+- [ ] eth-bridge: t4g.nano 신규 기동 + SQLite 마이그레이션 + Slack 알림 확인
+- [ ] bsc-bridge: t4g.nano 신규 기동 + SQLite 마이그레이션 + Slack 알림 확인
+- [ ] 구 인스턴스 중지 → 1주일 후 종료
 
 ---
 
-### Phase 4: operation 인스턴스 통합 (팀 검토 필요)
+### Phase 4: operation 인스턴스 통합 (선택, 팀 검토 필요)
 
 `operation-instance`와 `bsc-bridge-operation`이 같은 서브넷, 같은 타입.
 실제 역할을 팀에서 확인 후 1개로 통합 가능 시 $15/월 추가 절감.
@@ -172,10 +200,10 @@ aws ec2 modify-volume --region us-east-2 \
 ## 예상 월 비용 변화
 
 ```
-현재 비용:           $611.80/월
-Phase 1 완료 후:    ~$278/월  (오늘 바로 가능, 리스크 없음)
-Phase 2 완료 후:    ~$133/월
-Phase 3+4 완료 후:  ~$89/월
+Jan 2026 실측:       $611.80/월
+Phase 1 완료:       ~$278/월  ✅ 2026-03-29 완료
+Phase 2 완료 후:    ~$115/월  (EC2 다운사이징, 팀 결정 대기)
+Phase 3 완료 후:    ~$69/월   (t4g.nano 이전, 팀 결정 대기)
 ```
 
 ---
