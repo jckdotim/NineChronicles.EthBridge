@@ -1,6 +1,6 @@
-import { AbiItem } from 'web3-utils';
+import { ContractInterface } from "ethers";
 
 export interface ContractDescription {
-    abi: AbiItem | AbiItem[],
-    address: string,
-};
+    abi: ContractInterface;
+    address: string;
+}

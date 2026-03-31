@@ -3,10 +3,12 @@ import { IHeadlessGraphQLClient } from "../src/interfaces/headless-graphql-clien
 
 describe(NCGTransfer.name, () => {
     const mockHeadlessGraphQlClient: jest.Mocked<IHeadlessGraphQLClient> = {
+        endpoint: "http://localhost:23061/graphql",
         getBlockHash: jest.fn(),
         getBlockIndex: jest.fn(),
         getNCGTransferredEvents: jest.fn(),
         getNextTxNonce: jest.fn((address) => Promise.resolve(0)),
+        getGenesisHash: jest.fn(),
         getTipIndex: jest.fn(),
         transfer: jest.fn(),
         createUnsignedTx: jest.fn(),
@@ -18,13 +20,17 @@ describe(NCGTransfer.name, () => {
 
     describe(NCGTransfer.prototype.transfer.name, () => {
         it("should transfer", async () => {
-            await ncgTransfer.transfer("0x1111111111111111111111111111111111111111", "1.12", null);
+            await ncgTransfer.transfer(
+                "0x1111111111111111111111111111111111111111",
+                "1.12",
+                null
+            );
             expect(mockHeadlessGraphQlClient.transfer).toHaveBeenCalledWith(
                 "0x1111111111111111111111111111111111111111",
                 "1.12",
                 0,
                 null
-            )
+            );
         });
     });
 });

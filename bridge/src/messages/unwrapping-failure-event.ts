@@ -1,7 +1,9 @@
 import { ChatPostMessageArguments } from "@slack/web-api";
-import { combineUrl, Message } from ".";
+import { Message } from ".";
 import { TxId } from "../types/txid";
 import { Address } from "../types/address";
+import { ForceOmit } from "../types/force-omit";
+import { combineUrl } from "./utils";
 
 export class UnwrappingFailureEvent implements Message {
     private readonly _url: string;
@@ -10,6 +12,8 @@ export class UnwrappingFailureEvent implements Message {
     private readonly _txId: TxId;
     private readonly _amount: string;
     private readonly _error: string;
+    private readonly _planetName: string;
+    private readonly _subscribers: string;
 
     constructor(
         url: string,
@@ -17,21 +21,26 @@ export class UnwrappingFailureEvent implements Message {
         recipient: Address,
         amount: string,
         txId: TxId,
-        error: string) {
+        error: string,
+        planetName: string,
+        subscribers: string
+    ) {
         this._url = url;
         this._sender = sender;
         this._recipient = recipient;
         this._amount = amount;
         this._txId = txId;
         this._error = error;
+        this._planetName = planetName;
+        this._subscribers = subscribers;
     }
 
-    render(): Partial<ChatPostMessageArguments> {
+    render(): ForceOmit<Partial<ChatPostMessageArguments>, "channel"> {
         return {
-            text: "wNCG → NCG event failed.",
+            text: `wNCG → NCG event failed. ${this._subscribers}`,
             attachments: [
                 {
-                    author_name: 'Bridge Error',
+                    author_name: "Bridge Error",
                     color: "#ff0033",
                     fields: [
                         {
@@ -48,16 +57,20 @@ export class UnwrappingFailureEvent implements Message {
                         },
                         {
                             title: "amount",
-                            value: this._amount
+                            value: this._amount,
+                        },
+                        {
+                            title: "Planet Name",
+                            value: this._planetName,
                         },
                         {
                             title: "error",
-                            value: this._error
-                        }
+                            value: this._error,
+                        },
                     ],
-                    fallback: `wNCG ${this._sender} → NCG ${this._recipient} failed`
-                }
-            ]
-        }
+                    fallback: `wNCG ${this._sender} → NCG ${this._recipient} failed`,
+                },
+            ],
+        };
     }
 }

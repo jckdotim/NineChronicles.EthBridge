@@ -1,24 +1,16 @@
-import { IHeadlessGraphQLClient } from "../../src/interfaces/headless-graphql-client";
 import { NCGKMSTransfer } from "../../src/ncg-kms-transfer";
 import { Configuration } from "../../src/configuration";
 import { HeadlessGraphQLClient } from "../../src/headless-graphql-client";
 import { KMSNCGSigner } from "../../src/kms-ncg-signer";
 
 describe(NCGKMSTransfer.name, () => {
-    const mockHeadlessGraphQlClient: jest.Mocked<IHeadlessGraphQLClient> = {
-        getBlockHash: jest.fn(),
-        getBlockIndex: jest.fn(),
-        getNCGTransferredEvents: jest.fn(),
-        getNextTxNonce: jest.fn((address) => Promise.resolve(0)),
-        getTipIndex: jest.fn(),
-        transfer: jest.fn(),
-        createUnsignedTx: jest.fn(),
-        attachSignature: jest.fn(),
-        stageTx: jest.fn(),
-    };
-    const mockAddress = "0x0000000000000000000000000000000000000000";
-    const mockPublicKey = "BB/RQoardpERFnzxZs05Tj0Lq2gpyOGJUZ4nn6Oq1XnlkPRq1LN5HQqPdIOgYV73MbaSfW+VwPVpbtf/ViX51OE=";
-    const mockNcgMinterAddress = "0x99DF57BF45240C8a87615B0C884007501395d526";
+    const KMS_PROVIDER_ADDRESS: string = Configuration.get(
+        "TEST_KMS_PROVIDER_ADDRESS"
+    );
+    const KMS_PROVIDER_PUBLIC_KEY: string = Configuration.get(
+        "TEST_KMS_PROVIDER_PUBLIC_KEY"
+    );
+    const NCG_MINTER: string = Configuration.get("TEST_NCG_MINTER");
     const KMS_PROVIDER_KEY_ID: string = Configuration.get(
         "TEST_KMS_PROVIDER_KEY_ID"
     );
@@ -36,12 +28,16 @@ describe(NCGKMSTransfer.name, () => {
         accessKeyId: KMS_PROVIDER_AWS_ACCESSKEY,
         secretAccessKey: KMS_PROVIDER_AWS_SECRETKEY,
     });
-    const headlessGraphQLCLient = new HeadlessGraphQLClient(Configuration.get("TEST_GRAPHQL_API_ENDPOINT"));
+    const headlessGraphQLCLient = new HeadlessGraphQLClient(
+        Configuration.get("TEST_GRAPHQL_API_ENDPOINT"),
+        5,
+        "jwt_secret_key_for_test"
+    );
     const ncgKmsTransfer = new NCGKMSTransfer(
-        headlessGraphQLCLient,
-        mockAddress,
-        mockPublicKey,
-        [mockNcgMinterAddress],
+        [headlessGraphQLCLient],
+        KMS_PROVIDER_ADDRESS,
+        KMS_PROVIDER_PUBLIC_KEY,
+        [NCG_MINTER],
         signer
     );
 

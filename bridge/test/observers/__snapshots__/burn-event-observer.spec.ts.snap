@@ -1,6 +1,78 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EthereumBurnEventObserver notify slack 9c transfer error message - snapshot 1`] = `
+exports[`EthereumBurnEventObserver notify pagerduty 9c transfer error message - snapshot 1`] = `
+Array [
+  Array [
+    "Unexpected error during unwrapping NCG",
+    Object {
+      "amountString": "1.00",
+      "errorMessage": "Error: mockNcgTransfer.transfer error",
+      "sender": "0x2734048eC2892d111b4fbAB224400847544FC872",
+      "transactionHash": "TX-ID",
+      "user9cAddress": "0x6d29f9923C86294363e59BAaA46FcBc37Ee5aE2e",
+    },
+  ],
+]
+`;
+
+exports[`EthereumBurnEventObserver notify should handle existing exchange history and send error message 1`] = `
+Array [
+  Array [
+    Object {
+      "attachments": Array [
+        Object {
+          "author_name": "Bridge Warning",
+          "color": "#ffcc00",
+          "fallback": "wNCG → NCG event already seems executed so it skipped.",
+          "fields": Array [
+            Object {
+              "title": "Ethereum network transaction id",
+              "value": "EXISTING-TX-ID",
+            },
+          ],
+        },
+      ],
+      "text": "wNCG → NCG event already seems executed so it skipped.",
+    },
+  ],
+]
+`;
+
+exports[`EthereumBurnEventObserver notify should handle existing exchange history and send error message 2`] = `
+Array [
+  Array [
+    "error",
+    Object {
+      "amount": "1.00",
+      "cause": "Exchange history exist",
+      "content": "wNCG -> NCG request failure",
+      "ethereumTxId": "EXISTING-TX-ID",
+      "recipient": "0x6d29f9923C86294363e59BAaA46FcBc37Ee5aE2e",
+      "sender": "0x2734048eC2892d111b4fbAB224400847544FC872",
+    },
+  ],
+]
+`;
+
+exports[`EthereumBurnEventObserver notify slack/opensearch 9c transfer error message - snapshot 1`] = `
+Array [
+  Array [
+    "error",
+    Object {
+      "amount": 1,
+      "cause": "Error: mockNcgTransfer.transfer error",
+      "content": "wNCG -> NCG request failure",
+      "ethereumTxId": "TX-ID",
+      "network": "ETH",
+      "planetName": "odin",
+      "recipient": "0x6d29f9923C86294363e59BAaA46FcBc37Ee5aE2e",
+      "sender": "0x2734048eC2892d111b4fbAB224400847544FC872",
+    },
+  ],
+]
+`;
+
+exports[`EthereumBurnEventObserver notify slack/opensearch 9c transfer error message - snapshot 2`] = `
 Array [
   Array [
     Object {
@@ -12,7 +84,7 @@ Array [
           "fields": Array [
             Object {
               "title": "Ethereum transaction",
-              "value": "https://ropsten.etherscan.io/tx/TX-ID?",
+              "value": "https://sepolia.etherscan.io/tx/TX-ID",
             },
             Object {
               "title": "sender (Ethereum)",
@@ -27,20 +99,41 @@ Array [
               "value": "1.00",
             },
             Object {
+              "title": "Planet Name",
+              "value": "odin",
+            },
+            Object {
               "title": "error",
               "value": "Error: mockNcgTransfer.transfer error",
             },
           ],
         },
       ],
-      "channel": "#nine-chronicles-bridge-bot",
-      "text": "wNCG → NCG event failed.",
+      "text": "wNCG → NCG event failed. @gamefi-be",
     },
   ],
 ]
 `;
 
-exports[`EthereumBurnEventObserver notify slack message - snapshot 1`] = `
+exports[`EthereumBurnEventObserver notify slack/opensearch message - snapshot 1`] = `
+Array [
+  Array [
+    "info",
+    Object {
+      "amount": 1,
+      "content": "wNCG -> NCG request success",
+      "ethereumTxId": "TX-ID",
+      "libplanetTxId": "TX-HASH",
+      "network": "ETH",
+      "planetName": "odin",
+      "recipient": "0x6d29f9923C86294363e59BAaA46FcBc37Ee5aE2e",
+      "sender": "0x2734048eC2892d111b4fbAB224400847544FC872",
+    },
+  ],
+]
+`;
+
+exports[`EthereumBurnEventObserver notify slack/opensearch message - snapshot 2`] = `
 Array [
   Array [
     Object {
@@ -52,11 +145,11 @@ Array [
           "fields": Array [
             Object {
               "title": "9c network transaction",
-              "value": "https://explorer.libplanet.io/9c-internal/transaction/?TX-HASH",
+              "value": "https://explorer.libplanet.io/9c-internal/transaction?TX-HASH",
             },
             Object {
               "title": "Ethereum network transaction",
-              "value": "https://ropsten.etherscan.io/tx/TX-ID?",
+              "value": "https://sepolia.etherscan.io/tx/TX-ID",
             },
             Object {
               "title": "sender (Ethereum)",
@@ -70,10 +163,21 @@ Array [
               "title": "amount",
               "value": "1.00",
             },
+            Object {
+              "title": "Planet-Name",
+              "value": "odin",
+            },
+            Object {
+              "title": "Network",
+              "value": "Ethereum",
+            },
+            Object {
+              "title": "Not Multi-Planet Request Type",
+              "value": "This Transfer Request is not a multi-planet request type.",
+            },
           ],
         },
       ],
-      "channel": "#nine-chronicles-bridge-bot",
       "text": "wNCG → NCG event occurred.",
     },
   ],

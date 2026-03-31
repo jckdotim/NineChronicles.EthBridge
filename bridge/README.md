@@ -2,28 +2,70 @@
 
 This application relays between `wNCG` on [Ethereum] and `NCG` on Nine Chronicles network.
 
+## Prerequisite
+
+```
+# Nodejs LTS
+$ node --version
+v16.17.0
+
+# https://yarnpkg.com/
+$ yarn --version
+1.22.19
+
+# Python 2 should be installed and alias via python
+$ python --version
+Python 2.7.18
+
+# SQLite3 should be installed because it uses SQLite3 as database.
+$ command -v sqlite3
+/usr/bin/sqlite3
+```
+
 ## Installation
 
 ```
-npm install
+yarn
 ```
 
 ## Build
 
 ```
-npm run build
+yarn build
 ```
 
-## Test
+## Run test
 
 ```
-npm test
+yarn test
+```
+
+### Run only tests related to bridge
+
+```
+yarn test:bridge
+```
+
+### Run only tests dependent to AWS
+
+```
+yarn test:aws
+```
+
+### To run a single test
+
+```
+# Insatll Yarn
+$ npm install --global yarn
+
+# Run via yarn jest
+$ yarn jest test/observers/burn-event-observer.spec.ts
 ```
 
 ## Run
 
 ```
-npm run start
+yarn start
 ```
 
 ## Build (Docker)
